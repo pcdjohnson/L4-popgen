@@ -224,7 +224,7 @@ if(plot.genotypes) {
   print(paste("'True' F:", round(1 - (1 - 1/(2*n))^n.gen, 3)))
   print("***********************************")
   
-  # If this was real data, and we knew the (effetive) size of each population,
+  # If this was real data, and we knew the (effective) size of each population,
   # we could solve the above equation for t (time in generations), and estimate
   # the age of the populations in no of generations since divergence:
   t.est <- log(1 - F.est) / log((1 - 1/(2*n)))
