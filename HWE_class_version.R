@@ -10,22 +10,22 @@ library(viridis)
 # choose plotting options
 
 # plot a graphic of the genotypes in each sub-population at the final generation?
-plot.genotypes <- FALSE
+plot.genotypes <- TRUE
 # slow down genetic drift plotting to see one popn at a time
 plot.delay <- 0.2 # change to e.g. 0.2 to slow down
 
 # Set up population parameters
 
 # no of diploid individuals
-n <- 5
+n <- 10
 # number of generations to simulate
-n.gen <- 20
+n.gen <- 15
 # frequency of A1 allele at generation 0
 p <- 0.5 
 # frequency of A2 allele at generation 0
 q <- 1 - p
 # number of sub-populations to simulate
-n.subpop <- 1
+n.subpop <- 16
 # selection coefficient against A1A1 (selection against A1A2 is s/2)
 s <- 0 # try e.g. 0.05 
 # additional selection against heterozygotes
@@ -151,7 +151,7 @@ if(plot.genotypes) {
            col = cols[i])
       
       box()
-      gap <- 0.1 * sqrt(n.subpop)/3
+      gap <- 0.07 * sqrt(n.subpop)/3
       coords <- 
         expand.grid(x = (1:ceiling(n/2))/(ceiling(n/2)+1), 
                     y = (1:ceiling(n/2))/(ceiling(n/2)+1))
