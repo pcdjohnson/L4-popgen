@@ -19,7 +19,7 @@ plot.delay <- 0.2 # change to e.g. 0.2 to slow down
 # no of diploid individuals
 n <- 10
 # number of generations to simulate
-n.gen <- 15
+n.gen <- 150
 # frequency of A1 allele at generation 0
 p <- 0.5 
 # frequency of A2 allele at generation 0
@@ -101,9 +101,6 @@ lwd <- 1.7
 plot(x = 0:n.gen, y = 0:n.gen, ylim = 0:1, type = "n", xlab = "Generation", 
      ylab = "Freq. of 'A1' allele",
      xlim = c(0, n.gen * 2 + gap), axes = FALSE)
-#box()
-#abline(v = n.gen + gap)
-#abline(v = n.gen)
 axis.labels <- pretty(c(0:n.gen))
 axis(1, at = axis.labels, las = 3, pos = 0)
 axis(1, at = axis.labels + n.gen + gap, labels = axis.labels, las = 3, pos = 0)
@@ -131,7 +128,6 @@ lapply(1:n.subpop, function(i) {
 # final frequencies of A1 allele
 final.freq <- sapply(simres, function(x) x$frequencies$A1[x$frequencies$gen == n.gen])
 final.freq
-#hist(final.freq[final.freq > 0 & final.freq < 1])
 finish.time - start.time
 
 
@@ -151,7 +147,7 @@ if(plot.genotypes) {
            col = cols[i])
       
       box()
-      gap <- 0.07 * sqrt(n.subpop)/3
+      gap <- 0.014 + 0.01 * sqrt(n.subpop)
       coords <- 
         expand.grid(x = (1:ceiling(n/2))/(ceiling(n/2)+1), 
                     y = (1:ceiling(n/2))/(ceiling(n/2)+1))
@@ -160,12 +156,11 @@ if(plot.genotypes) {
       apply(out, 1, function(x) {
         xcoord <- jitter(as.numeric(x[3]), factor = 1.5)
         ycoord <- jitter(as.numeric(x[4]), factor = 2)
-        points(c(xcoord, xcoord + gap), c(ycoord, ycoord), pch = 15, cex = 4, 
-               col = "grey20")
+        points(xcoord, ycoord, pch = 21, cex = 7, bg = "grey20", col = "white")
         alleles <- sort(unlist(x[1:2]))
         cols <- c(A1 = "yellow", A2 = "green")
-        text(x = c(xcoord, xcoord + gap), y = ycoord, labels = alleles, col = cols[alleles],
-             font = 2, cex = 1.1)
+        text(x = c(xcoord - gap/2, xcoord + gap/2), y = ycoord, labels = alleles, 
+             col = cols[alleles], font = 2, cex = 1.1)
       })
       out
     })
@@ -182,16 +177,22 @@ if(plot.genotypes) {
 
   # Frequency of the A1 allele across the whole population
   p.est <- mean(unlist(final.genotypes) == "A1")
-  print(paste("The frequency of the A1 allele across all", n.subpop, "sub-populations is", round(p.est, 3)))
+  print(paste("The frequency of the A1 allele across all", 
+              n.subpop, "sub-populations is", round(p.est, 3)), 
+        quote = FALSE)
   
   # Expected heterozygosity in the total population
   He.est <- 2 * p.est * (1 - p.est)
-  print(paste("The expected heterozygosity across all", n.subpop, "sub-populations is", round(He.est, 3)))
+  print(paste("The expected heterozygosity across all", 
+              n.subpop, "sub-populations is", round(He.est, 3)), 
+        quote = FALSE)
   
   # Observed homozygosity
   n.homozygote <- sum(apply(final.genotypes, 1, function(x) length(unique(x))) == 2)
   Ho.est <- n.homozygote / (n * n.subpop)
-  print(paste("The observed heterozygosity across all", n.subpop, "sub-populations is", round(Ho.est, 3)))
+  print(paste("The observed heterozygosity across all", 
+              n.subpop, "sub-populations is", round(Ho.est, 3)), 
+        quote = FALSE)
   
   # Calculate expected heterozygosity within each population
   Hs.est <- 
@@ -205,21 +206,24 @@ if(plot.genotypes) {
   
   # If Ho is less than He, then F should be > 0.
   Fit.est <- 1 - Ho.est / He.est
-  print(paste("Estimated Fit:", round(Fit.est, 3)))
+  print(paste("Estimated Fit:", round(Fit.est, 3)), 
+        quote = FALSE)
   
   # Here Fit.est means "an estimate of F". F simply gauges the extent of 
   # homozygote excess (how many more homozygotes are there compared to the HWE expectation?).
   
   # We can also calculate Fst (see chapter 9 of CGP, eqn 9.3)
   Fst.est <-  1 - Hs.est / He.est
-  print(paste("Estimated Fst:", round(Fst.est, 3)))
+  print(paste("Estimated Fst:", round(Fst.est, 3)), 
+        quote = FALSE)
   
 
   # We can also rearrange CGP eqn 9.4 to calculate Fis, the inbreeding coefficient,
   # which gauges the portion of heterozygote deficit (Fit) due to inbreeding rather than
   # population structure
   Fis.est <- (Fit.est - Fst.est) / (1 - Fst.est)
-  print(paste("Estimated Fis:", round(Fis.est, 3)))
+  print(paste("Estimated Fis:", round(Fis.est, 3)), 
+        quote = FALSE)
   
   
   
@@ -265,29 +269,34 @@ if(plot.genotypes) {
   #
   # We know both n and t, so we can use this equation to calculate what Fst should be:
 
-  print("***********************************")
-  print(paste("Estimated Fst:", round(Fst.est, 3)))
-  print(paste("'True' Fst:", round(1 - (1 - 1/(2*n))^n.gen, 3)))
-  print("***********************************")
+  print("***********************************", quote = FALSE)
+  print(paste("Estimated Fst:", round(Fst.est, 3)), quote = FALSE)
+  print(paste("'True' Fst:", round(1 - (1 - 1/(2*n))^n.gen, 3)), quote = FALSE)
+  print("***********************************", quote = FALSE)
   
   # If this was real data, and we knew the (effective) size of each sub-population,
   # we could solve the above equation for t (time in generations), and estimate
   # the age of the sub-populations in no of generations since divergence:
   t.est <- log(1 - Fst.est) / log((1 - 1/(2*n)))
-  print("***********************************")
-  print(paste("Estimated no of generations since splitting:", round(t.est, 1)))
-  print(paste("True number of generations:", n.gen))
-  print("***********************************")
+  print("***********************************", quote = FALSE)
+  print(paste("Estimated no of generations since splitting:", 
+              round(t.est, 1)), 
+        quote = FALSE)
+  print(paste("True number of generations:", n.gen), 
+        quote = FALSE)
+  print("***********************************", quote = FALSE)
   #
   # Alternatively, if we know the number of generations since splitting
   # (which is probably more realistic) we can estimate the effective size
   # of the sub-populations.
   # Solve the above equation for n:
   n.est <- 1/(2*(1 - (1 - Fst.est)^(1/n.gen)))
-  print("***********************************")
-  print(paste("Estimated effective sub-population size (Ne):", round(n.est, 1)))
-  print(paste("True effective sub-population size (Ne):", n))
-  print("***********************************")
+  print("***********************************", quote = FALSE)
+  print(paste("Estimated effective sub-population size (Ne):", 
+              round(n.est, 1)), 
+        quote = FALSE)
+  print(paste("True effective sub-population size (Ne):", n), quote = FALSE)
+  print("***********************************", quote = FALSE)
   
 }
 
