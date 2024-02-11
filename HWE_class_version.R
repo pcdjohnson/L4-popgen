@@ -3,9 +3,7 @@ rm(list = ls())
 graphics.off()
 
 # Load packages:
-library(scales)
 library(viridis)
-
 
 # choose plotting options
 
