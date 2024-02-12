@@ -17,7 +17,7 @@ plot.delay <- 0.2 # change to e.g. 0.2 to slow down
 # no of diploid individuals
 n <- 10
 # number of generations to simulate
-n.gen <- 150
+n.gen <- 15
 # frequency of A1 allele at generation 0
 p <- 0.5 
 # frequency of A2 allele at generation 0
