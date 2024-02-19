@@ -20,10 +20,10 @@ rm(list = ls())
 # Choose the characteristics of the simulated data:
 
 # No of individuals
-n <- 1000
+n <- 2000
 
 # No of SNP loci
-n.loci <- 10
+n.loci <- 100
 
 # Allele frequencies are drawn from a uniform distribution
 q <- runif(n.loci)
@@ -93,9 +93,6 @@ head(dat)
 dat$trait <- dat$genetic.effect + dat$environment.effect
 head(dat)
 
-# Look at the trait distribution. Can you produce something similar to Figure 11.1?
-hist(dat$trait, breaks = max(10, n/20))
-
 # calculate Va, Ve, and Hn
 Va <- var(dat$genetic.effect)
 Ve <- var(dat$environment.effect)
@@ -108,3 +105,9 @@ Hn
 Hn.exp
 Hn
 p
+
+# Look at the trait distribution. Can you produce something similar to Figure 11.1?
+hist(dat$trait, breaks = max(10, n/20), 
+     main = paste0("Variation in a quantitative trait with\n", n.loci, " underlying loci ", 
+                   "and heritability = ", round(100*Hn), "%"))
+
